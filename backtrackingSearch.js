@@ -11,7 +11,7 @@ define([ "ac3" ], function(ac3) {
 		if (csp.isSolved()) {
 			return csp.getVariableDomains();
 		}
-		var unasignedVariable = csp.getUnsolvedVariables()[0];
+		var unasignedVariable = chooseVariable(csp);
 		console.log(unasignedVariable);
 		var domainValues = csp.getVariableDomain(unasignedVariable);
 		for (var i = 0; i < domainValues.length; i++) {
@@ -36,6 +36,22 @@ define([ "ac3" ], function(ac3) {
 		var arcs = pacsp.getArcConstraintsToExcept(variable, null);
 		return ac3.solveArcs(pacsp, arcs);
 	}
-	
+
+	function chooseVariable(csp) {
+		var minRemainingValues = null;
+		var argMinRemainingValues = null;
+		var unsolvedVariables = csp.getUnsolvedVariables();
+		for (var i = 0; i < unsolvedVariables.length; i++) {
+			var unsolvedVariable = unsolvedVariables[i];
+			var domain = csp.getVariableDomain(unsolvedVariable);
+			if (minRemainingValues == null || domain.length < minRemainingValues) {
+				minRemainingValues = domain.length;
+				argMinRemainingValues = unsolvedVariable;
+			}
+		}
+
+		return argMinRemainingValues;
+	}
+
 	return backtrackingSearch;
 });
