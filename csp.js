@@ -49,6 +49,7 @@ define(function() {
 			arcs.push(bidirectionalArcs[1]);
 		}
 		var globalConstraints = cspData.globalConstraints;
+		var nodeConstraints = cspData.nodeConstraints;
 		cspData.setVariableDomains = function(newVariableDomain) {
 			variableDomain = newVariableDomain;
 		}
@@ -76,9 +77,24 @@ define(function() {
 		cspData.getArcs = function() {
 			return arcs;
 		}
+		cspData.makeNodeConsistent = function() {
+			for ( var variable in nodeConstraints) {
+				var f = nodeConstraints[variable];
+				var domain = variableDomain[variable];
+				var valuesToDelete = [];
+				for (var i = 0; i < domain.length; i++) {
+					var value = domain[i];
+					if (!f(value)) {
+						valuesToDelete.push(value);
+					}
+				}
+				for (var i = 0; i < valuesToDelete.length; i++) {
+					domain.splice(domain.indexOf(valuesToDelete[i]), 1);
+				}
+			}
+		}
 		cspData.revise = function(arc) {
-			// console.log("revising arc consistency for variable: " +
-			// arc.getFirst());
+			console.log("revising arc consistency for variable: " + arc.getFirst());
 			var constraintFunction = arc.getFunction();
 			var firstDomain = variableDomain[arc.getFirst()];
 			var secondDomain = variableDomain[arc.getSecond()];

@@ -17,12 +17,21 @@ requirejs.config({
 requirejs([ "csp", "ac3", "backtrackingSearch", "hochzeit" ], function(csp, ac3, backtrackingSearch, data) {
 	try {
 		var problem = csp(data);
-//		ac3.solve(problem);
-		
+		problem.makeNodeConsistent();
+
+		// ac3.solve(problem);
+
 		backtrackingSearch(problem);
-				
-		console.log(problem.getVariableDomains());
-		console.log(problem.isSolved());
+
+		if (problem.isSolved()) {
+			if (data.formatOutput) {
+				console.log(data.formatOutput(problem.getVariableDomains()))
+			} else {
+				console.log(problem.getVariableDomains());
+			}
+		} else {
+			console.log("no solution");
+		}
 
 	} catch (e) {
 		console.log(e.stack);
