@@ -49,8 +49,11 @@ define(function() {
 			arcs.push(bidirectionalArcs[1]);
 		}
 		var globalConstraints = cspData.globalConstraints;
-		cspData.setVariableDomain = function(newVariableDomain) {
+		cspData.setVariableDomains = function(newVariableDomain) {
 			variableDomain = newVariableDomain;
+		}
+		cspData.setVariableDomain = function(variable, domain) {
+			variableDomain[variable] = domain;
 		}
 		cspData.getVariables = function() {
 			return Object.keys(variableDomain);
@@ -104,11 +107,10 @@ define(function() {
 			}
 			return valuesToDelete.length > 0;
 		}
-		cspData.getPartiallyAssigned = function(assignments) {
+		cspData.clone = function() {
 			var newVariableDomain = {};
 			for ( var variable in variableDomain) {
-				newVariableDomain[variable] = assignments.hasOwnProperty(variable) ? assignments[variable].slice()
-						: variableDomain[variable].slice();
+				newVariableDomain[variable] = variableDomain[variable].slice();
 			}
 			var newData = {
 				"variableDomain" : newVariableDomain,
@@ -172,6 +174,16 @@ define(function() {
 				}
 			}
 			return false;
+		}
+		cspData.getUnsolvedVariables = function() {
+			var ret = [];
+			for ( var variable in variableDomain) {
+				if (variableDomain[variable].length > 1) {
+					ret.push(variable);
+				}
+			}
+
+			return ret;
 		}
 		cspData.getSolvedVariableDomains = function() {
 			var ret = {};
